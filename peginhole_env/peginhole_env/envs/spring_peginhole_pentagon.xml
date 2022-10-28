@@ -1,0 +1,99 @@
+<mujoco model="spring_peginhole">
+    <compiler angle="radian"
+              inertiafromgeom="true"
+              texturedir="textures/"
+              meshdir="mesh/"
+              coordinate="local"
+              settotalmass="5"/>
+    <option timestep="0.01" gravity="0 0 0" iterations="20" integrator="RK4" />
+
+
+    <size nstack="300000" nuser_geom="1"/>
+    <default>
+        <geom contype='1' conaffinity='1' condim='4'  margin="0" solref=".02 1" solimp=".8 .9 .001" />
+        <joint armature="0.1" damping=".1"/>
+
+        <default class="slide_joint">
+            <joint type="slide" damping='1'/>
+        </default>
+        <default class="hinge_joint">
+            <joint type="hinge" damping='1'/>
+        </default>
+    </default>
+
+    <visual>
+        <map fogstart="3" fogend="5" znear="0.05"/>
+        <quality shadowsize="2048"/>
+        <scale framelength="0.1"
+               framewidth="0.005"
+               contactwidth="0.1"
+               contactheight="0.005"
+               forcewidth="0.01"
+               />
+    </visual>
+
+    <!--Assets-->
+    <asset>
+        
+        <mesh name="peg"       file="peg_5bian_320.stl" scale="0.0099 0.0099 0.01"/>
+        <mesh name="hole"       file="hole_5bian_320.stl" scale="0.01 0.01 0.01"/>
+
+        <texture name="floor_tex"   type="2d"        file="fanuc.png" />
+        <texture name="metal"        type="cube"     file="red.png"/>
+
+        <material name='floor_mat'      texture="floor_tex"  shininess="0.8" texrepeat="10 10" specular="0.7"  reflectance="0.2" />
+        <material name="bench_mat"      texture="metal"   shininess="0.1" specular="0.5" reflectance="0.2"/>
+    </asset>
+
+    <!--MODEL DESCRIPTION-->
+    <worldbody>
+
+        <geom name='floor' material="floor_mat" pos='0 0 0' size='0.3 0.3 0.0001'  type='plane' />
+
+        <body name="peg" pos="0.0 0.0 0.05">
+            <joint name="slide1" class="slide_joint" axis="1 0 0"/>
+            <joint name="slide2" class="slide_joint" axis="0 1 0"/>
+            <joint name="slide3" class="slide_joint" axis="0 0 1"/>
+            <joint name="hinge1" class="hinge_joint" axis="1 0 0"/>
+            <joint name="hinge2" class="hinge_joint" axis="0 1 0"/>
+            <joint name="hinge3" class="hinge_joint" axis="0 0 1"/>            
+            
+            <site name="vertex1" pos = "-0.0079 -0.0079 -0.005" type="sphere" size="0.0005" rgba="0.6 0.8 0.1 1"/>
+
+            <geom type="mesh" mesh="peg" contype="1" conaffinity="1" rgba="0.6 0.8 0.1 1"/> 
+        </body>  
+
+
+
+
+        <body name="hole" pos="0 0 0.01">
+
+            <geom type="mesh" pos="0 0 0" quat = "0 0.5877853 0.809017 0" mesh="hole" material="bench_mat" contype="1" conaffinity="1"/> 
+            <geom type="mesh" pos="0 0 0" quat = "0 0.9510565 0.309017 0" mesh="hole" material="bench_mat" contype="1" conaffinity="1"/> 
+            <geom type="mesh" pos="0 0 0" quat = "0 0.9510565 -0.309017 0" mesh="hole" material="bench_mat" contype="1" conaffinity="1"/> 
+            <geom type="mesh" pos="0 0 0" quat = "0 0.5877853 -0.809017 0" mesh="hole" material="bench_mat" contype="1" conaffinity="1"/> 
+            <geom type="mesh" pos="0 0 0" quat = "0 0 1 0" mesh="hole" material="bench_mat" contype="1" conaffinity="1"/> 
+
+        </body>
+
+
+
+    </worldbody>
+
+    <!--ACTUATORS-->
+    <actuator>
+        <velocity name='velocity1' joint='slide1' kv="10" ctrllimited = "true" ctrlrange = "-0.1 0.1" forcelimited = "true" forcerange = "-50 50"/> 
+        <velocity name='velocity2' joint='slide2' kv="10" ctrllimited = "true" ctrlrange = "-0.1 0.1" forcelimited = "true" forcerange = "-50 50"/>
+        <velocity name='velocity3' joint='slide3' kv="10" ctrllimited = "true" ctrlrange = "-0.1 0.1" forcelimited = "true" forcerange = "-50 50"/>
+        <velocity name='rotation1' joint='hinge1' kv="10"  ctrllimited = "true" ctrlrange = "-0.35 0.35" forcelimited = "true" forcerange = "-10 10"/> 
+        <velocity name='rotation2' joint='hinge2' kv="10" ctrllimited = "true" ctrlrange = "-0.35 0.35" forcelimited = "true" forcerange = "-10 10"/>
+        <velocity name='rotation3' joint='hinge3' kv="10" ctrllimited = "true" ctrlrange = "-0.35 0.35" forcelimited = "true" forcerange = "-10 10"/>
+
+
+    </actuator>
+    <sensor>
+     <force  name="forcesensor" site="vertex1" />
+    </sensor>
+
+</mujoco>
+		
